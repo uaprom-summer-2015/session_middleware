@@ -24,7 +24,6 @@ class SessionMiddleware(object):
             self.sid = cookie['SID']
             environ['SID'] = (self.sid, 0)  # 'old' SID: need NOT to send Set-Cookie
 
-        print environ['SID']
         environ['SESSION'] = {}
         response = self.app(environ, wrapped_start_response)
         print environ['SID']
