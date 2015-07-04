@@ -1,11 +1,14 @@
 from urlparse import parse_qs
 from collections import namedtuple
 
+
 def Request(environ):
-    return namedtuple('Request', ['path', 'GET', ])(
+    return namedtuple('Request', ['path', 'GET', 'environ'])(
+        environ=environ,
         path=environ['PATH_INFO'],
-        GET=parse_qs(environ['QUERY_STRING']),
+        GET=parse_qs(environ['QUERY_STRING'])
     )
+
 
 def Response(status, body):
     def wrapper(environ, start_response):
@@ -17,6 +20,7 @@ def Response(status, body):
         return [body]
     return wrapper
 
+
 def Router(route_map):
     def router(environ, start_response):
         path = environ['PATH_INFO']
@@ -24,6 +28,7 @@ def Router(route_map):
         action = route_map.get(path, default)
         return action(environ, start_response)
     return router
+
 
 def controller(func):
     def wrapper(environ, start_response):
