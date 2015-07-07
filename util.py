@@ -1,10 +1,13 @@
 from urlparse import parse_qs
 from collections import namedtuple
+import Cookie
 
 def Request(environ):
-    return namedtuple('Request', ['path', 'GET', ])(
+    return namedtuple('Request', ['path', 'GET', 'sid', 'POST'])(
         path=environ['PATH_INFO'],
         GET=parse_qs(environ['QUERY_STRING']),
+        sid = Cookie.SimpleCookie(environ.get('HTTP_COOKIE', {})).get('sid').value,
+        POST = parse_qs(environ['wsgi.input'].read(int(environ.get('CONTENT_LENGTH') or '0'))),
     )
 
 def Response(status, body):
@@ -13,7 +16,7 @@ def Response(status, body):
             200: '200 OK',
             404: '404 Not Found'
         }[status]
-        start_response(http_status, [('Content-type', 'text/plain')])
+        start_response(http_status, [('Content-type', 'text/html')])
         return [body]
     return wrapper
 
