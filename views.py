@@ -16,7 +16,7 @@ def hello(request):
 def name_user(request):
     sid = request.sid
     name = sessions.get(sid) or request.POST.get('name',[None])[0]
-    sessions[sid] = name
+    sessions.set(sid, name)
 
     if name:
         return Response(200, hello % name)
@@ -25,7 +25,7 @@ def name_user(request):
 @controller
 def bye(request):
     sid = request.sid
-    sessions[sid] = None
+    sessions.set(sid, None)
     return Response(200, anonymous)
 
 router = Router({
